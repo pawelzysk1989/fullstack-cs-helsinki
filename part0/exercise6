@@ -1,0 +1,17 @@
+title Exercise 6 - new note spa
+
+note over browser:
+user inputs new note and clicks Save button 
+end note
+
+note over browser:
+array of notes is updated on the browser side
+end note
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa\n JSON { content: "HTML is easy", date: "2019-05-23" }
+
+note over server:
+array of notes is updated on the server side
+end note
+
+server-->browser: Status code 201 \n JSON {"message":"note created"}

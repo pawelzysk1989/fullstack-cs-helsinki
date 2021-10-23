@@ -1,0 +1,14 @@
+title Exercise 4 - new note
+
+note over browser:
+user inputs new note and clicks Save button 
+end note
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note \n FormData{note: inputValue}
+
+note over server:
+array of notes is updated
+end note
+
+server-->browser: Status code 302 \n  Location: /exampleapp/notes
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/notes
