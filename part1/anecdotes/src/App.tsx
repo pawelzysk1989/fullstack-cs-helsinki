@@ -18,6 +18,17 @@ const ANECDOTES = [
 
 const getRandomIndex = (arr: any[]): number => getRandomIntInclusive(0, arr.length - 1);
 
+const getAnotherRandomIndex = (arr: any[]) => {
+  const getIndex = (prevIndex: number): number => {
+    const randomIndex = getRandomIndex(arr);
+    if (randomIndex !== prevIndex) {
+      return randomIndex;
+    }
+    return getIndex(prevIndex);
+  };
+  return getIndex;
+};
+
 type AnecdoteProps = {
   text: string;
   votes: number;
@@ -61,13 +72,14 @@ const App = () => {
 
   const selectedAnecdote = anecdotes[selected];
 
-  const mostPopularAnecdote = anecdotes.reduce(
-    (mostPopular, current) => (current.votes > mostPopular.votes ? current : mostPopular),
-    selectedAnecdote,
+  const mostPopularAnecdote = anecdotes.reduce<typeof anecdotes[0] | undefined>(
+    (mostPopular, current) =>
+      current.votes > (mostPopular?.votes ?? 0) ? current : mostPopular,
+    undefined,
   );
 
-  const switchAnecdote = () => {
-    setSelected(getRandomIndex(anecdotes));
+  const switchSelectedAnecdote = () => {
+    setSelected(getAnotherRandomIndex(anecdotes));
   };
   const updateVotes = () => {
     setAnecdotes(
@@ -84,9 +96,9 @@ const App = () => {
       <Section title="Anectode of the day">
         <Anecdote text={selectedAnecdote.text} votes={selectedAnecdote.votes} />
         <Button onClick={updateVotes}>vote</Button>
-        <Button onClick={switchAnecdote}>next anecdote</Button>
+        <Button onClick={switchSelectedAnecdote}>next anecdote</Button>
       </Section>
-      {mostPopularAnecdote.votes > 0 && (
+      {mostPopularAnecdote && (
         <Section title="Anectode with most votes">
           <Anecdote text={mostPopularAnecdote.text} votes={mostPopularAnecdote.votes} />
         </Section>
