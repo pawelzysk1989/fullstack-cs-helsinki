@@ -1,4 +1,4 @@
-import React, { ReactNode, useReducer } from 'react';
+import React, { ReactNode, useReducer, useState, useEffect } from 'react';
 
 type AnecdoteProps = {
   text: string;
@@ -68,7 +68,6 @@ type Anecdote = typeof anecdotes[0];
 const initialState = {
   anecdotes,
   selectedIndex: getRandomIndex(anecdotes),
-  mostPopular: undefined as Anecdote | undefined,
 };
 
 type ActionType =
@@ -95,18 +94,29 @@ function anecdoteReducer(state: State, action: ActionType): State {
         anecdotes: state.anecdotes.map((anecdote) =>
           anecdote.text === upvotedAnecdote.text ? upvotedAnecdote : anecdote,
         ),
-        mostPopular:
-          !state.mostPopular || upvotedAnecdote.votes > state.mostPopular.votes
-            ? upvotedAnecdote
-            : state.mostPopular,
       };
     }
   }
 }
 
 const App = () => {
-  const [{ anecdotes, selectedIndex, mostPopular: mostPopularAnecdote }, dispatch] =
-    useReducer(anecdoteReducer, initialState);
+  const [{ anecdotes, selectedIndex }, dispatch] = useReducer(
+    anecdoteReducer,
+    initialState,
+  );
+  const [mostPopularAnecdote, setMostPopularAnecdote] = useState(
+    undefined as Anecdote | undefined,
+  );
+
+  useEffect(() => {
+    setMostPopularAnecdote((prevMostPopular) =>
+      anecdotes.reduce(
+        (mostPopular, current) =>
+          current.votes > (mostPopular?.votes ?? 0) ? current : mostPopular,
+        prevMostPopular,
+      ),
+    );
+  }, [anecdotes]);
 
   const selectedAnecdote = anecdotes[selectedIndex];
 
