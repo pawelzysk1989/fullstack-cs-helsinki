@@ -50,15 +50,12 @@ const ANECDOTES = [
 
 const getRandomIndex = (arr: any[]): number => getRandomIntInclusive(0, arr.length - 1);
 
-const getAnotherRandomIndex = (arr: any[]) => {
-  const getIndex = (prevIndex: number): number => {
-    const randomIndex = getRandomIndex(arr);
-    if (randomIndex !== prevIndex) {
-      return randomIndex;
-    }
-    return getIndex(prevIndex);
-  };
-  return getIndex;
+const getAnotherRandomIndex = (arr: any[], prevIndex: number): number => {
+  const randomIndex = getRandomIndex(arr);
+  if (randomIndex !== prevIndex) {
+    return randomIndex;
+  }
+  return getAnotherRandomIndex(arr, prevIndex);
 };
 
 const anecdotes = ANECDOTES.map((text) => ({
@@ -66,15 +63,17 @@ const anecdotes = ANECDOTES.map((text) => ({
   votes: 0,
 }));
 
+type Anecdote = typeof anecdotes[0];
+
 const initialState = {
   anecdotes,
-  selectedIndex: getRandomIndex(ANECDOTES),
-  mostPopularAnecdote: undefined as typeof anecdotes[0] | undefined,
+  selectedIndex: getRandomIndex(anecdotes),
+  mostPopular: undefined as Anecdote | undefined,
 };
 
 type ActionType =
   | { type: 'draw_next'; payload: number }
-  | { type: 'vote'; payload: number };
+  | { type: 'vote'; payload: Anecdote };
 
 type State = typeof initialState;
 
@@ -86,56 +85,50 @@ function anecdoteReducer(state: State, action: ActionType): State {
         selectedIndex: action.payload,
       };
     case 'vote': {
-      const selectedAnecdote = state.anecdotes[state.selectedIndex];
-      const upvotedSelectedAnecdote = {
-        ...selectedAnecdote,
-        votes: selectedAnecdote.votes + 1,
+      const upvotedAnecdote = {
+        ...action.payload,
+        votes: action.payload.votes + 1,
       };
 
       return {
         ...state,
         anecdotes: state.anecdotes.map((anecdote) =>
-          anecdote.text === upvotedSelectedAnecdote.text
-            ? upvotedSelectedAnecdote
-            : anecdote,
+          anecdote.text === upvotedAnecdote.text ? upvotedAnecdote : anecdote,
         ),
-        mostPopularAnecdote:
-          !state.mostPopularAnecdote ||
-          upvotedSelectedAnecdote.votes > state.mostPopularAnecdote.votes
-            ? upvotedSelectedAnecdote
-            : state.mostPopularAnecdote,
+        mostPopular:
+          !state.mostPopular || upvotedAnecdote.votes > state.mostPopular.votes
+            ? upvotedAnecdote
+            : state.mostPopular,
       };
     }
   }
 }
 
 const App = () => {
-  const [{ anecdotes, selectedIndex, mostPopularAnecdote }, dispatch] = useReducer(
-    anecdoteReducer,
-    initialState,
-  );
+  const [{ anecdotes, selectedIndex, mostPopular: mostPopularAnecdote }, dispatch] =
+    useReducer(anecdoteReducer, initialState);
 
   const selectedAnecdote = anecdotes[selectedIndex];
 
   const drawNext = () => {
     dispatch({
       type: 'draw_next',
-      payload: getAnotherRandomIndex(anecdotes)(selectedIndex),
+      payload: getAnotherRandomIndex(anecdotes, selectedIndex),
     });
   };
   const vote = () => {
     dispatch({
       type: 'vote',
-      payload: selectedAnecdote.votes + 1,
+      payload: selectedAnecdote,
     });
   };
 
   return (
     <>
       <Section title="Anectode of the day">
-        <Anecdote text={selectedAnecdote.text} votes={selectedAnecdote.votes} />
         <Button onClick={vote}>vote</Button>
         <Button onClick={drawNext}>next anecdote</Button>
+        <Anecdote text={selectedAnecdote.text} votes={selectedAnecdote.votes} />
       </Section>
       {mostPopularAnecdote && (
         <Section title="Anectode with most votes">
