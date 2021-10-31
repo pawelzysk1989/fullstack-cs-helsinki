@@ -1,1 +1,0 @@
-# fullstack-cs-helsinki
