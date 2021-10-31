@@ -35,6 +35,8 @@ module.exports = {
     'simple-import-sort/exports': 'error',
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    'no-redeclare': 'off',
+    '@typescript-eslint/no-redeclare': ['error'],
     'jsx-a11y/anchor-is-valid': [
       'error',
       {

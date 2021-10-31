@@ -1,4 +1,4 @@
-import React, { ReactNode, useReducer, useState, useEffect } from 'react';
+import React, { ReactNode, useEffect, useReducer, useState } from 'react';
 
 type AnecdoteProps = {
   text: string;
@@ -63,7 +63,7 @@ const anecdotes = ANECDOTES.map((text) => ({
   votes: 0,
 }));
 
-type Anecdote = typeof anecdotes[0];
+type AnecdoteType = typeof anecdotes[0];
 
 const initialState = {
   anecdotes,
@@ -72,7 +72,7 @@ const initialState = {
 
 type ActionType =
   | { type: 'draw_next'; payload: number }
-  | { type: 'vote'; payload: Anecdote };
+  | { type: 'vote'; payload: AnecdoteType };
 
 type State = typeof initialState;
 
@@ -105,7 +105,7 @@ const App = () => {
     initialState,
   );
   const [mostPopularAnecdote, setMostPopularAnecdote] = useState(
-    undefined as Anecdote | undefined,
+    undefined as AnecdoteType | undefined,
   );
 
   useEffect(() => {
