@@ -1,8 +1,9 @@
 import React from 'react';
 
 import Course from './components/course/Course';
+import { Course as CourseType } from './models/course';
 
-const COURSES = [
+const COURSES: CourseType[] = [
   {
     name: 'Half Stack application development',
     id: 1,
@@ -46,11 +47,6 @@ const COURSES = [
     ],
   },
 ];
-
-type CourseType = typeof COURSES[0];
-
-type CoursePart = CourseType['parts'][0];
-
 
 const App = () => {
   return (

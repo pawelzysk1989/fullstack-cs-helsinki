@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Part as CoursePart } from '../../models/course';
 import Part from './Part';
 
 type ContentProps = {
