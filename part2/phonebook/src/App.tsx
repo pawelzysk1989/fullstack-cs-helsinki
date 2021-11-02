@@ -5,23 +5,6 @@ import PersonList from './components/PersonList';
 import PersonSearch from './components/PersonSearch';
 import { Person as PersonType } from './models/Person';
 
-const validatePersonName = (
-  persons: PersonType[],
-  newPerson: PersonType,
-): string | null => {
-  return persons.find(({ name }) => name === newPerson.name)
-    ? `${newPerson.name} already added to the phonebook`
-    : null;
-};
-
-const validatePerson = (persons: PersonType[], newPerson: PersonType): string[] => {
-  const validators = [validatePersonName];
-  return validators.reduce((errors, validator) => {
-    const error = validator(persons, newPerson);
-    return error ? errors.concat(error) : errors;
-  }, [] as string[]);
-};
-
 const App = () => {
   const [persons, setPersons] = useState<PersonType[]>([
     { name: 'Arto Hellas', number: '040-123456' },
@@ -40,21 +23,14 @@ const App = () => {
     person.name.toLowerCase().includes(search.toLowerCase()),
   );
 
-  const addPerson = (newPerson: PersonType, resetForm: () => void) => {
-    const errors = validatePerson(persons, newPerson);
-
-    if (errors.length) {
-      alert(errors.join('\n'));
-    } else {
-      setPersons(persons.concat(newPerson));
-      resetForm();
-    }
+  const addPerson = (newPerson: PersonType) => {
+    setPersons(persons.concat(newPerson));
   };
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <PersonForm onSubmit={addPerson} />
+      <PersonForm persons={persons} onSubmit={addPerson} />
       <h2>Numbers</h2>
       <PersonSearch search={search} onSearchChange={handleSearchChange} />
       <PersonList persons={filteredPersons} />
