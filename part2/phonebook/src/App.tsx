@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 
 import PersonForm from './components/PersonForm';
 import PersonList from './components/PersonList';
@@ -6,12 +7,13 @@ import PersonSearch from './components/PersonSearch';
 import { Person as PersonType } from './models/Person';
 
 const App = () => {
-  const [persons, setPersons] = useState<PersonType[]>([
-    { name: 'Arto Hellas', number: '040-123456' },
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' },
-  ]);
+  const [persons, setPersons] = useState<PersonType[]>([]);
+
+  useEffect(() => {
+    axios
+      .get<PersonType[]>('http://localhost:8080/persons')
+      .then((response) => setPersons(response.data));
+  }, []);
 
   const [search, setSearch] = useState('');
 
