@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Weather as WeatherType } from '../models/Weather';
 import WeatherDetails from './WeatherDetails';
 
-const access_key = import.meta.env['VITE_WEATHER_API_KEY'];
+const access_key = import.meta.env.VITE_WEATHER_API_KEY;
 
 type Props = {
   location: string;
@@ -23,7 +23,8 @@ const Weather = ({ location }: Props) => {
       })
       .then((response) => {
         setWeatherInfo(response.data);
-      });
+      })
+      .catch(console.error);
   }, [location]);
 
   return (
