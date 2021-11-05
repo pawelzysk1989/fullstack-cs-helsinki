@@ -1,18 +1,17 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
 import PersonForm from './components/PersonForm';
 import PersonList from './components/PersonList';
 import PersonSearch from './components/PersonSearch';
-import { Person as PersonType } from './models/Person';
+import Section from './components/Section';
+import { NewPerson, Person } from './models/Person';
+import personService from './services/persons';
 
 const App = () => {
-  const [persons, setPersons] = useState<PersonType[]>([]);
+  const [persons, setPersons] = useState<Person[]>([]);
 
   useEffect(() => {
-    axios
-      .get<PersonType[]>('http://localhost:8080/persons')
-      .then((response) => setPersons(response.data));
+    personService.getAll().then(setPersons);
   }, []);
 
   const [search, setSearch] = useState('');
@@ -25,18 +24,28 @@ const App = () => {
     person.name.toLowerCase().includes(search.toLowerCase()),
   );
 
-  const addPerson = (newPerson: PersonType) => {
-    setPersons(persons.concat(newPerson));
+  const addPerson = (newPerson: NewPerson) => {
+    personService.create(newPerson).then((person) => setPersons(persons.concat(person)));
+  };
+
+  const deletePerson = ({ id, name }: Person) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      personService.delete(id).then(() => {
+        setPersons(persons.filter((person) => person.id !== id));
+      });
+    }
   };
 
   return (
-    <div>
-      <h2>Phonebook</h2>
-      <PersonForm persons={persons} onSubmit={addPerson} />
-      <h2>Numbers</h2>
-      <PersonSearch search={search} onSearchChange={handleSearchChange} />
-      <PersonList persons={filteredPersons} />
-    </div>
+    <>
+      <Section title="Phonebook">
+        <PersonForm persons={persons} onSubmit={addPerson} />
+      </Section>
+      <Section title="Numbers">
+        <PersonSearch search={search} onSearchChange={handleSearchChange} />
+        <PersonList persons={filteredPersons} onDelete={deletePerson} />
+      </Section>
+    </>
   );
 };
 

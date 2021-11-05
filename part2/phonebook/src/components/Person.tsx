@@ -4,12 +4,17 @@ import { Person as PersonType } from '../models/Person';
 
 type Props = {
   person: PersonType;
+  onDelete: () => void;
 };
 
-const Person = ({ person: { name, number } }: Props) => (
-  <li>
-    {name}: {number}
-  </li>
+const Person = ({ person: { name, number }, onDelete }: Props) => (
+  <tr className="table-row">
+    <td className="table-cell">{name}</td>
+    <td className="table-cell">{number}</td>
+    <td className="table-cell">
+      <button onClick={onDelete}>delete</button>
+    </td>
+  </tr>
 );
 
 export default Person;

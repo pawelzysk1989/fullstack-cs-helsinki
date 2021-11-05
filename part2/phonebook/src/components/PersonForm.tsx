@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 
-import { Person as PersonType } from '../models/Person';
+import { NewPerson, Person } from '../models/Person';
 
-const validatePersonName = (
-  persons: PersonType[],
-  newPerson: PersonType,
-): string | null => {
+const validatePersonName = (persons: Person[], newPerson: NewPerson): string | null => {
   return persons.find(({ name }) => name === newPerson.name)
     ? `${newPerson.name} already added to the phonebook`
     : null;
 };
 
-const validatePerson = (persons: PersonType[], newPerson: PersonType): string[] => {
+const validatePerson = (persons: Person[], newPerson: NewPerson): string[] => {
   const validators = [validatePersonName];
   return validators.reduce((errors, validator) => {
     const error = validator(persons, newPerson);
@@ -20,8 +17,8 @@ const validatePerson = (persons: PersonType[], newPerson: PersonType): string[] 
 };
 
 type Props = {
-  persons: PersonType[];
-  onSubmit: (person: PersonType) => void;
+  persons: Person[];
+  onSubmit: (person: NewPerson) => void;
 };
 
 const PersonForm = ({ persons, onSubmit }: Props) => {
@@ -30,7 +27,7 @@ const PersonForm = ({ persons, onSubmit }: Props) => {
 
   const addPerson = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const newPerson: PersonType = {
+    const newPerson: NewPerson = {
       name: newName,
       number: newNumber,
     };
@@ -56,18 +53,28 @@ const PersonForm = ({ persons, onSubmit }: Props) => {
   const isDisabled = !(newName && newNumber);
 
   return (
-    <form onSubmit={addPerson}>
-      <div>
-        name: <input value={newName} onChange={handleNameChange} />
-      </div>
-      <div>
-        number: <input value={newNumber} onChange={handleNumberChange} />
-      </div>
-      <div>
-        <button disabled={isDisabled} type="submit">
-          add
-        </button>
-      </div>
+    <form className="form" onSubmit={addPerson}>
+      <label className="form-field">
+        <span className="form-field__label">name</span>
+        <input
+          className="form-field__control"
+          value={newName}
+          onChange={handleNameChange}
+        />
+      </label>
+
+      <label className="form-field">
+        <span className="form-field__label">number</span>
+        <input
+          className="form-field__control"
+          value={newNumber}
+          onChange={handleNumberChange}
+        />
+      </label>
+
+      <button className="form-button" disabled={isDisabled} type="submit">
+        add
+      </button>
     </form>
   );
 };
