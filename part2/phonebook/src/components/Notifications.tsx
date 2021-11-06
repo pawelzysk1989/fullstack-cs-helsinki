@@ -9,7 +9,7 @@ type Props = {
 
 function Notifications({ notifications }: Props) {
   return (
-    <div>
+    <div className="notifications">
       {notifications.map((notification) => (
         <Notification key={notification.message} notification={notification} />
       ))}

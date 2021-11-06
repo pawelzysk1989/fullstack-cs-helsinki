@@ -8,8 +8,8 @@ type Props = {
 
 function Notification({ notification: { type, message } }: Props) {
   return (
-    <div>
-      {type} {message}
+    <div className={`notification notification--${type}`}>
+      <span className="notification__message">{message}</span>
     </div>
   );
 }

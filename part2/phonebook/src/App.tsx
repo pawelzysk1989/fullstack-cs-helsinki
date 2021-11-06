@@ -93,7 +93,7 @@ const App = () => {
 
   return (
     <>
-      <Notifications notifications={notifications} />
+      {Boolean(notifications.length) && <Notifications notifications={notifications} />}
       <Section title="Phonebook">
         <PersonForm onSubmit={submitPerson} />
       </Section>
