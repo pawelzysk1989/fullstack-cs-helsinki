@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import { NewPerson, Person } from '../models/Person';
 import personService from '../services/persons';
+import InputField from './InputField';
 
 type Props = {
   persons: Person[];
@@ -9,8 +10,8 @@ type Props = {
 };
 
 const PersonForm = ({ persons, setPersons }: Props) => {
-  const [newName, setNewName] = useState('');
-  const [newNumber, setNewNumber] = useState('');
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
   const addPerson = (newPerson: NewPerson) => {
     personService.create(newPerson).then((person) => setPersons(persons.concat(person)));
@@ -26,63 +27,43 @@ const PersonForm = ({ persons, setPersons }: Props) => {
     });
   };
 
+  const resetForm = () => {
+    setName('');
+    setNumber('');
+  };
+
   const submitPerson = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const newPerson: NewPerson = {
-      name: newName,
-      number: newNumber,
+      name,
+      number,
     };
 
-    const duplicatedPerson = persons.find((person) => person.name === newPerson.name);
+    const existingPerson = persons.find((person) => person.name === newPerson.name);
 
-    if (!duplicatedPerson) {
-      setNewName('');
-      setNewNumber('');
+    if (!existingPerson) {
+      resetForm();
       addPerson(newPerson);
     } else if (
       window.confirm(
         `${newPerson.name} is already added to Phonebook, replace the old number with the new on`,
       )
     ) {
-      setNewName('');
-      setNewNumber('');
+      resetForm();
       updatePerson({
-        ...duplicatedPerson,
+        ...existingPerson,
         ...newPerson,
       });
     }
   };
 
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewName(event.target.value);
-  };
-  const handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewNumber(event.target.value);
-  };
-
-  const isDisabled = !(newName && newNumber);
+  const isDisabled = !(name && number);
 
   return (
     <form className="form" onSubmit={submitPerson}>
-      <label className="form-field">
-        <span className="form-field__label">name</span>
-        <input
-          className="form-field__control"
-          value={newName}
-          onChange={handleNameChange}
-        />
-      </label>
-
-      <label className="form-field">
-        <span className="form-field__label">number</span>
-        <input
-          className="form-field__control"
-          value={newNumber}
-          onChange={handleNumberChange}
-        />
-      </label>
-
-      <button className="form-button" disabled={isDisabled} type="submit">
+      <InputField label="name" value={name} onChange={setName} />
+      <InputField label="number" value={number} onChange={setNumber} />
+      <button type="submit" className="form-button" disabled={isDisabled}>
         add
       </button>
     </form>
