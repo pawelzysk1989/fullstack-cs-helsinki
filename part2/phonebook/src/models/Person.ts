@@ -4,4 +4,4 @@ export type Person = {
   number: string;
 };
 
-export type NewPerson = Omit<Person, 'id'>;
+export type PersonFormState = Omit<Person, 'id'>;
