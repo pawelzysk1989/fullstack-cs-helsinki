@@ -1,45 +1,55 @@
 import React, { useState } from 'react';
 
 import { NewPerson, Person } from '../models/Person';
-
-const validatePersonName = (persons: Person[], newPerson: NewPerson): string | null => {
-  return persons.find(({ name }) => name === newPerson.name)
-    ? `${newPerson.name} already added to the phonebook`
-    : null;
-};
-
-const validatePerson = (persons: Person[], newPerson: NewPerson): string[] => {
-  const validators = [validatePersonName];
-  return validators.reduce((errors, validator) => {
-    const error = validator(persons, newPerson);
-    return error ? errors.concat(error) : errors;
-  }, [] as string[]);
-};
+import personService from '../services/persons';
 
 type Props = {
   persons: Person[];
-  onSubmit: (person: NewPerson) => void;
+  setPersons: (value: React.SetStateAction<Person[]>) => void;
 };
 
-const PersonForm = ({ persons, onSubmit }: Props) => {
+const PersonForm = ({ persons, setPersons }: Props) => {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
 
-  const addPerson = (event: React.FormEvent<HTMLFormElement>) => {
+  const addPerson = (newPerson: NewPerson) => {
+    personService.create(newPerson).then((person) => setPersons(persons.concat(person)));
+  };
+
+  const updatePerson = (changedPerson: Person) => {
+    personService.update(changedPerson).then((returnedPerson) => {
+      setPersons(
+        persons.map((person) =>
+          person.id !== returnedPerson.id ? person : returnedPerson,
+        ),
+      );
+    });
+  };
+
+  const submitPerson = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const newPerson: NewPerson = {
       name: newName,
       number: newNumber,
     };
 
-    const errors = validatePerson(persons, newPerson);
+    const duplicatedPerson = persons.find((person) => person.name === newPerson.name);
 
-    if (errors.length) {
-      alert(errors.join('\n'));
-    } else {
-      onSubmit(newPerson);
+    if (!duplicatedPerson) {
       setNewName('');
       setNewNumber('');
+      addPerson(newPerson);
+    } else if (
+      window.confirm(
+        `${newPerson.name} is already added to Phonebook, replace the old number with the new on`,
+      )
+    ) {
+      setNewName('');
+      setNewNumber('');
+      updatePerson({
+        ...duplicatedPerson,
+        ...newPerson,
+      });
     }
   };
 
@@ -53,7 +63,7 @@ const PersonForm = ({ persons, onSubmit }: Props) => {
   const isDisabled = !(newName && newNumber);
 
   return (
-    <form className="form" onSubmit={addPerson}>
+    <form className="form" onSubmit={submitPerson}>
       <label className="form-field">
         <span className="form-field__label">name</span>
         <input

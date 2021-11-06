@@ -4,7 +4,7 @@ import PersonForm from './components/PersonForm';
 import PersonList from './components/PersonList';
 import PersonSearch from './components/PersonSearch';
 import Section from './components/Section';
-import { NewPerson, Person } from './models/Person';
+import { Person } from './models/Person';
 import personService from './services/persons';
 
 const App = () => {
@@ -24,10 +24,6 @@ const App = () => {
     person.name.toLowerCase().includes(search.toLowerCase()),
   );
 
-  const addPerson = (newPerson: NewPerson) => {
-    personService.create(newPerson).then((person) => setPersons(persons.concat(person)));
-  };
-
   const deletePerson = ({ id, name }: Person) => {
     if (window.confirm(`Delete ${name}?`)) {
       personService.delete(id).then(() => {
@@ -39,7 +35,7 @@ const App = () => {
   return (
     <>
       <Section title="Phonebook">
-        <PersonForm persons={persons} onSubmit={addPerson} />
+        <PersonForm persons={persons} setPersons={setPersons} />
       </Section>
       <Section title="Numbers">
         <PersonSearch search={search} onSearchChange={handleSearchChange} />
