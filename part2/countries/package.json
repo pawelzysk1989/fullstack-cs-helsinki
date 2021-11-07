@@ -4,7 +4,6 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "server": "json-server --port 8080 --watch db.json",
     "serve": "vite preview",
     "lint:fix": "eslint ./src --ext .jsx,.js,.ts,.tsx --quiet --fix --ignore-path ./.gitignore",
     "lint:format": "prettier  --loglevel warn --write \"./**/*.{js,jsx,ts,tsx,css,md,json}\" ",
@@ -17,6 +16,7 @@
     "react-dom": "^17.0.2"
   },
   "devDependencies": {
+    "@types/node": "^16.11.6",
     "@types/react": "^17.0.14",
     "@types/react-dom": "^17.0.9",
     "@typescript-eslint/eslint-plugin": "^4.28.2",
@@ -29,7 +29,6 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
-    "json-server": "^0.17.0",
     "pre-commit": "^1.2.2",
     "prettier": "^2.3.2",
     "typescript": "^4.3.5",

@@ -1,73 +1,38 @@
 import React, { useState } from 'react';
 
-import { Person as PersonType } from '../models/Person';
-
-const validatePersonName = (
-  persons: PersonType[],
-  newPerson: PersonType,
-): string | null => {
-  return persons.find(({ name }) => name === newPerson.name)
-    ? `${newPerson.name} already added to the phonebook`
-    : null;
-};
-
-const validatePerson = (persons: PersonType[], newPerson: PersonType): string[] => {
-  const validators = [validatePersonName];
-  return validators.reduce((errors, validator) => {
-    const error = validator(persons, newPerson);
-    return error ? errors.concat(error) : errors;
-  }, [] as string[]);
-};
+import { PersonFormState } from '../models/Person';
+import InputField from './InputField';
 
 type Props = {
-  persons: PersonType[];
-  onSubmit: (person: PersonType) => void;
+  onSubmit: (person: PersonFormState, reset: () => void) => void;
 };
 
-const PersonForm = ({ persons, onSubmit }: Props) => {
-  const [newName, setNewName] = useState('');
-  const [newNumber, setNewNumber] = useState('');
+const PersonForm = ({ onSubmit }: Props) => {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
-  const addPerson = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const newPerson: PersonType = {
-      name: newName,
-      number: newNumber,
+  const submit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const personFrom: PersonFormState = {
+      name,
+      number,
     };
-
-    const errors = validatePerson(persons, newPerson);
-
-    if (errors.length) {
-      alert(errors.join('\n'));
-    } else {
-      onSubmit(newPerson);
-      setNewName('');
-      setNewNumber('');
-    }
+    onSubmit(personFrom, () => {
+      setName('');
+      setNumber('');
+    });
   };
 
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewName(event.target.value);
-  };
-  const handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewNumber(event.target.value);
-  };
-
-  const isDisabled = !(newName && newNumber);
+  const isDisabled = !(name && number);
 
   return (
-    <form onSubmit={addPerson}>
-      <div>
-        name: <input value={newName} onChange={handleNameChange} />
-      </div>
-      <div>
-        number: <input value={newNumber} onChange={handleNumberChange} />
-      </div>
-      <div>
-        <button disabled={isDisabled} type="submit">
-          add
-        </button>
-      </div>
+    <form className="form" onSubmit={submit}>
+      <InputField label="name" value={name} onChange={setName} />
+      <InputField label="number" value={number} onChange={setNumber} />
+      <button type="submit" className="form-button" disabled={isDisabled}>
+        add
+      </button>
     </form>
   );
 };
