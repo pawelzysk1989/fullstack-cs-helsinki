@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { PersonFormState } from '../models/Person';
+import { PersonFormState } from '../types/Person';
 import InputField from './InputField';
 
 type Props = {

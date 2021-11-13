@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Person as PersonType } from '../models/Person';
+import { Person as PersonType } from '../types/Person';
 
 type Props = {
   person: PersonType;

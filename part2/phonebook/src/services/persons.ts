@@ -1,8 +1,9 @@
 import axios, { AxiosError } from 'axios';
 
-import { Person, PersonFormState } from '../models/Person';
+import { Person, PersonFormState } from '../types/Person';
+import { isServerError } from '../types/ServerError';
 
-const baseUrl = 'http://localhost:8080/persons';
+const baseUrl = 'api/persons';
 
 const getAll = () => {
   const request = axios.get<Person[]>(baseUrl);
@@ -11,12 +12,28 @@ const getAll = () => {
 
 const create = (personFormState: PersonFormState) => {
   const request = axios.post<Person>(baseUrl, personFormState);
-  return request.then(({ data }) => data);
+  return request
+    .then(({ data }) => data)
+    .catch((error: Error | AxiosError) => {
+      if (isServerError(error)) {
+        throw Error(error.response?.data.error ?? error.message);
+      } else {
+        throw error;
+      }
+    });
 };
 
 const update = (person: Person) => {
   const request = axios.put<Person>(`${baseUrl}/${person.id}`, person);
-  return request.then(({ data }) => data);
+  return request
+    .then(({ data }) => data)
+    .catch((error: Error | AxiosError) => {
+      if (isServerError(error)) {
+        throw Error(error.response?.data.error ?? error.message);
+      } else {
+        throw error;
+      }
+    });
 };
 
 const remove = (person: Person) => {

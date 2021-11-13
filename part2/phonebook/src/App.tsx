@@ -5,9 +5,9 @@ import PersonForm from './components/PersonForm';
 import PersonList from './components/PersonList';
 import PersonSearch from './components/PersonSearch';
 import Section from './components/Section';
-import { Notification } from './models/Notification';
-import { Person, PersonFormState } from './models/Person';
 import personService from './services/persons';
+import { Notification } from './types/Notification';
+import { Person, PersonFormState } from './types/Person';
 
 const App = () => {
   const [persons, setPersons] = useState<Person[]>([]);
@@ -53,23 +53,39 @@ const App = () => {
   };
 
   const addPerson = (personFormState: PersonFormState) => {
-    personService.create(personFormState).then((person) => {
-      addNotifiaction({
-        type: 'success',
-        message: `Added ${person.name}`,
-      }),
-        setPersons(persons.concat(person));
-    });
+    personService
+      .create(personFormState)
+      .then((person) => {
+        addNotifiaction({
+          type: 'success',
+          message: `Added ${person.name}`,
+        }),
+          setPersons(persons.concat(person));
+      })
+      .catch((err: Error) => {
+        addNotifiaction({
+          type: 'error',
+          message: err.message,
+        });
+      });
   };
 
   const updatePerson = (changedPerson: Person) => {
-    personService.update(changedPerson).then((returnedPerson) => {
-      setPersons(
-        persons.map((person) =>
-          person.id !== returnedPerson.id ? person : returnedPerson,
-        ),
-      );
-    });
+    personService
+      .update(changedPerson)
+      .then((returnedPerson) => {
+        setPersons(
+          persons.map((person) =>
+            person.id !== returnedPerson.id ? person : returnedPerson,
+          ),
+        );
+      })
+      .catch((err: Error) => {
+        addNotifiaction({
+          type: 'error',
+          message: err.message,
+        });
+      });
   };
 
   const submitPerson = (personFormState: PersonFormState, resetForm: () => void) => {

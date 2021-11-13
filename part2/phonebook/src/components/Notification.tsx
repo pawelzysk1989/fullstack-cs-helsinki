@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Notification as NotificationType } from '../models/Notification';
+import { Notification as NotificationType } from '../types/Notification';
 
 type Props = {
   notification: NotificationType;
