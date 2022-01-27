@@ -1,35 +1,41 @@
 import React from 'react';
 
-import { Country as CountryType } from '../models/Country';
+import useCountry from '../hooks/useCountry';
 import Weather from './Weather';
 
 type Props = {
-  country: CountryType;
+  code: string;
 };
 
-const Country = ({ country: { name, capital, population, languages, flags } }: Props) => (
-  <div>
-    <h2>{name.common}</h2>
-    <div>
-      capital: <strong>{capital.join(', ')}</strong>
-    </div>
-    <div>
-      population: <strong>{population}</strong>
-    </div>
-    <div>
-      <h3>Spoken languages</h3>
-      <ul>
-        {Object.values(languages).map((lang) => (
-          <li key={lang}>{lang}</li>
-        ))}
-      </ul>
-    </div>
-    <img src={flags.png} alt="country flag" />
+const Country = ({ code }: Props) => {
+  const country = useCountry(code);
 
-    {capital.map((location) => (
-      <Weather key={location} location={location} />
-    ))}
-  </div>
-);
+  if (!country) {
+    return null;
+  }
+
+  return (
+    <div>
+      <h2>{country.name}</h2>
+      <div>
+        capital: <strong>{country.capital}</strong>
+      </div>
+      <div>
+        population: <strong>{country.population}</strong>
+      </div>
+      <div>
+        <h3>Spoken language</h3>
+        <ul>
+          {country.languages.map((lang) => (
+            <li key={lang.name}>{lang.name}</li>
+          ))}
+        </ul>
+      </div>
+      <img src={country.flag} alt="country flag" />
+
+      <Weather location={country.capital} latlng={country.latlng} />
+    </div>
+  );
+};
 
 export default Country;

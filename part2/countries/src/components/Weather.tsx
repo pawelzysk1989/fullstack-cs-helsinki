@@ -8,9 +8,10 @@ const access_key = import.meta.env.VITE_WEATHER_API_KEY;
 
 type Props = {
   location: string;
+  latlng: [number, number];
 };
 
-const Weather = ({ location }: Props) => {
+const Weather = ({ location, latlng }: Props) => {
   const [weatherInfo, setWeatherInfo] = useState<WeatherType | undefined>(undefined);
 
   useEffect(() => {
@@ -18,7 +19,7 @@ const Weather = ({ location }: Props) => {
       .get<WeatherType>('http://api.weatherstack.com/current', {
         params: {
           access_key,
-          query: location,
+          query: latlng.join(','),
         },
       })
       .then((response) => {

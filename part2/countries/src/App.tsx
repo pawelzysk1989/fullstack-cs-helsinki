@@ -1,27 +1,20 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import Country from './components/Country';
 import Expandable from './components/Expandable';
 import Info from './components/Info';
-import { Country as CountryType } from './models/Country';
+import useCountries from './hooks/useCountries';
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [countries, setCountries] = useState<CountryType[]>([]);
-
-  useEffect(() => {
-    axios
-      .get<CountryType[]>('https://restcountries.com/v3.1/all')
-      .then((response) => setCountries(response.data));
-  }, []);
+  const countries = useCountries();
 
   const handleSearchTermChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
   const searchedCountries = countries.filter((country) =>
-    country.name.common.toLowerCase().includes(searchTerm.toLowerCase()),
+    country.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const searchedCountriesView = (): React.ReactNode => {
@@ -32,12 +25,12 @@ function App() {
         return <Info message="Too many matches, specity another filter" />;
       case searchedCountries.length > 1:
         return searchedCountries.map((country) => (
-          <Expandable key={country.name.common} title={country.name.common}>
-            <Country country={country} />
+          <Expandable key={country.name} title={country.name}>
+            <Country code={country.alpha2Code} />
           </Expandable>
         ));
       case searchedCountries.length === 1:
-        return <Country country={searchedCountries[0]} />;
+        return <Country code={searchedCountries[0].alpha2Code} />;
 
       default:
         return <Info message="Zero matches, specity another filter" />;

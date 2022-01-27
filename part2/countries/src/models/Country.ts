@@ -1,13 +1,15 @@
 export type Country = {
-  name: {
-    common: string;
-    official: string;
-  };
-  capital: string[];
+  name: string;
+  alpha2Code: string;
+};
+
+export type CountryDetails = {
+  name: string;
+  capital: string;
+  latlng: [number, number];
   population: number;
-  languages: Record<string, string>;
-  flags: {
-    png: string;
-    svg: string;
-  };
+  languages: {
+    name: string;
+  }[];
+  flag: string;
 };
